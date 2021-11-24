@@ -2,8 +2,18 @@
 #include<fstream>
 #include<sstream>
 #include<string>
+#define max 8
 
 using namespace std;
+
+
+string strings[max];
+
+
+int get_length_str_array(data string[]) {
+	int result = *(&data + 1) - data;
+	return result;
+}
 
 string read_file(string path) {
 	string data;
@@ -16,8 +26,9 @@ string read_file(string path) {
 	return data;
 }
 
-void split_string(string teks) {
+string* split_string(string teks) {
 	string to;
+	string* result;
 	int num = 0;
 
 	stringstream ss(teks);
