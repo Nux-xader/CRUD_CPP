@@ -110,7 +110,9 @@ bool check_already_account(string username, string type_account) {
 
 
 void add_admin_account() {
-	string username, password, add_again;
+	ifstream admin;
+	ofstream adminsave;
+	string username, password, add_again, buffer, data;
 	while (true) {
 		clr_screen();
 		cout << banner << endl;
@@ -132,6 +134,20 @@ void add_admin_account() {
 		// input password
 		cout << "Password : ";
 		cin >> password;
+
+		// read admin.txt and save to var data
+		admin.open("db/admin.txt");
+		while(!admin.eof()) {
+			getline(admin, buffer);
+			data+=buffer+"\n";
+		}
+		// add new username, password
+		data+=username+" "+password;
+		// saving to file
+		adminsave.open("db/admin.txt");
+		adminsave << data;
+		adminsave.close();
+
 		cout << "Akun berhasil di tambahkan" << endl;
 		cout << "Apakah ingin menambahkan akun lagi? (y) : ";
 		cin >> add_again;
