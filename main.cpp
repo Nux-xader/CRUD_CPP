@@ -35,6 +35,7 @@ string login(string username, string password) {
 			if (username == data) {
 				admin >> data;
 				if (password == data) {
+					admin.close();
 					return "admin";
 				} else {
 					return "wrong";
@@ -43,6 +44,7 @@ string login(string username, string password) {
 			}
 		}
 	}
+	admin.close();
 
 	// reset value i
 	i = 0;
@@ -55,6 +57,7 @@ string login(string username, string password) {
 			if (username == data) {
 				karyawan >> data;
 				if (password == data) {
+					karyawan.close();
 					return "karyawan";
 				} else {
 					return "wrong";
@@ -63,6 +66,7 @@ string login(string username, string password) {
 			}
 		}
 	}
+	karyawan.close();
 	return "wrong";
 }
 
@@ -82,10 +86,12 @@ bool check_already_account(string username, string type_account) {
 			admin >> data;
 			if ((i%2) != 0) {
 				if (username == data) {
+					admin.close();
 					return true;
 				}
 			}
 		}
+		admin.close();
 		return false;
 
 	} else if (type_account == "karyawan") {
@@ -97,10 +103,12 @@ bool check_already_account(string username, string type_account) {
 			karyawan >> data;
 			if ((i%2) != 0) {
 				if (username == data) {
+					karyawan.close();
 					return true;
 				}
 			}
 		}
+		karyawan.close();
 		return false;
 	}
 
@@ -141,6 +149,7 @@ void add_admin_account() {
 			getline(admin, buffer);
 			data+=buffer+"\n";
 		}
+		admin.close();
 		// add new username, password
 		data+=username+" "+password;
 		// saving to file
@@ -155,6 +164,95 @@ void add_admin_account() {
 
 		} else {
 			break;
+		}
+	}
+}
+
+
+void change_paswd(string type_account) {
+	// declarate var
+	int i;
+	string result = "";
+	string path, data, username, password, change_again;
+	ifstream file;
+	ofstream savefile;
+
+	// clear screen, and view banner
+	clr_screen();
+	cout << banner << endl;
+
+
+	// checking account type
+	if (type_account == "admin") {
+		path = "db/admin.txt";
+	} else if (type_account == "karyawan") {
+		path = "db/karyawan.txt";
+	}
+
+	i = 0;
+	cout << "Daftar username "<< type_account <<" :" << endl;
+	file.open(path);
+	while(!file.eof()) {
+		i++;
+		file >> data;
+		if ((i%2) != 0) {
+			cout << data << endl;
+		}
+	}
+	file.close();
+
+	cout << "\n";
+	while (true) {
+		cout << "Masukkan username : ";
+		cin >> username;
+		i = 0;
+		if (check_already_account(username, type_account)) {
+			cout << "Masukkan password baru : ";
+			cin >> password;
+
+			// Update password
+			file.open(path);
+			while(!file.eof()) {
+				file >> data;
+				if (username == data) {
+					file >> data;
+				} else {
+					result+=data+" ";
+					file >> data;
+					result+=data+"\n";
+				}
+			}
+			file.close();
+			result+=username+" "+password;
+
+			// saving to file
+			savefile.open(path);
+			savefile << result;
+			savefile.close();
+
+			cout << "Password berhasil di update" << endl;
+			cout << "Apakah ingin mengubah password lagi? (y) : ";
+			cin >> change_again;
+			if ((change_again == "y") | (change_again == "Y")) {
+				// clear screen, and view banner
+				clr_screen();
+				cout << banner << endl;
+				cout << "Daftar username "<< type_account <<" :" << endl;
+				file.open(path);
+				while(!file.eof()) {
+					i++;
+					file >> data;
+					if ((i%2) != 0) {
+						cout << data << endl;
+					}
+				}
+				file.close();
+			} else {
+				break;
+			}
+
+		} else {
+			cout << "Mohom memasukkan username yang telah ada" << endl;
 		}
 	}
 }
@@ -182,11 +280,14 @@ void admin() {
 			break;
 		} else if (choice == "1") {
 			add_admin_account();
-			admin_menu();
-		} else {
+		} else if (choice == "2") {
+			change_paswd("admin");
+		}
+		else {
 			cout << "menu berikutnya masih tahap pengembangan" << endl;
 			break;
 		}
+		admin_menu();
 	}
 }
 
