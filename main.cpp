@@ -53,21 +53,55 @@ string login(string username, string password) {
 }
 
 
+// Function for clear screen
+void clr_screen() {
+	// if oprating system is windows 32bit or 64bit use cls
+	#ifdef _WIN32
+		system("cls");
+	// if oprating system not windows use clear
+	#else
+	    system("clear");
+	#endif
+}
+
 int main(){
-	string username, password;
+	// declarate variable
+	string username, password, x;
 	string banner = "\tRESTO APP V1.0.0\n";
-	cout << banner << endl;
+	while (true) {
+		clr_screen();
+		cout << banner << endl;
 
-	// Login input
-	cout << "Login" << endl;
-	cout << "Username : ";
-	cin >> username;
-	cout << "Password : ";
-	cin >> password;
+		// Login input
+		cout << "Login" << endl;
+		cout << "Username : ";
+		cin >> username;
+		cout << "Password : ";
+		cin >> password;
 
-	string account = login(username, password);
-	cout << account << endl;
-	cin.get();
+		// Check if login as admin
+		if (login(username, password) == "admin") {
+			cout << "Anda login sebagai admin" << endl;
+			cout << "menu selanjutnya masih tahap pengembangan" << endl;
+			break;
+		// Check if login as karyawan
+		} else if (login(username, password) == "karyawan") {
+			cout << "Anda login sebagai karyawan" << endl;
+			cout << "menu selanjutnya masih tahap pengembangan" << endl;
+			break;
+		// statment for wrong username or password
+		} else {
+			cout << "Wrong username or password" << endl;
+			cout << "ingin login ulang? (y/n) : ";
+			cin >> x;
+			if (x == "n" | x == "N" ) {
+				break;
+			} else if (x != "y" | x != "Y" ) {
+				cout << "Anda memasukkan inputan yang salah" << endl;
+				break;
+			}
+		}
+	}
 	
 	return 0;
 }
