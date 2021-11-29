@@ -1,13 +1,23 @@
+// #include <bits/stdc++.h>
 #include <iostream>
-#include <fstream>
-#include <cstring>
-
 using namespace std;
 
-int main() {
-	string str = "abcdefghij";
+void tokenize(string s, string del) {
+	int start = 0;
+	int end = s.find(del);
+	while (end != -1) {
+		cout << s.substr(start, end - start) << endl;
+		start = end + del.size();
+		end = s.find(del, start);
+	}
+	cout << s.substr(start, end - start);
+}
 
-	cout << "After erase : ";
-	cout << str.substr (0, str.length()-1);
-    return 0;
+int main(int argc, char const* argv[]) {
+	// Takes C++ string with any separator
+	string a = "Hisdfs||dfgdf||vsdfsd";
+	tokenize(a, "||");
+	cout << a.find("||");
+
+	return 0;
 }

@@ -19,6 +19,18 @@ void clr_screen() {
 	#endif
 }
 
+
+// check contains string
+bool str_in_str(string str1, string str2) {
+	if (str1.find(str2) != string::npos) {
+		return true;
+	} else {
+		return false;
+	}
+	return false;
+}
+
+
 // return admin if login as admin, and return karyawan if login as karyawan
 string login(string username, string password) {
 	// decarate var
@@ -129,7 +141,13 @@ void add_admin_account() {
 		// always check username if already regristed
 		while (true) {
 			cout << "Username : ";
-			cin >> username;
+			getline(cin, username);
+
+			// replacing space with unique string
+			if (str_in_str(username, "_-_")) {
+				username.replace(username.find(" "), 1, "_-_");
+			}
+
 			// Checking username
 			if (check_already_account(username, "admin")) {
 				cout << "Akun "<< username <<"telah terdaftar sebelumnya!" << endl;
@@ -141,7 +159,13 @@ void add_admin_account() {
 
 		// input password
 		cout << "Password : ";
-		cin >> password;
+		getline(cin, password);
+
+		// replacing space with unique string
+		if (str_in_str(password, "_-_")) {
+			password.replace(password.find(" "), 1, "_-_");
+		}
+
 
 		// read admin.txt and save to var data
 		admin.open("db/admin.txt");
@@ -159,7 +183,7 @@ void add_admin_account() {
 
 		cout << "Akun berhasil di tambahkan" << endl;
 		cout << "Apakah ingin menambahkan akun lagi? (y) : ";
-		cin >> add_again;
+		getline(cin, add_again);
 		if ((add_again == "y") | (add_again == "Y")) {
 
 		} else {
@@ -258,6 +282,86 @@ void change_paswd(string type_account) {
 }
 
 
+void add_karyawan_account() {
+	ifstream karyawan, bio_karyawan;
+	ofstream karyawansave, bio_karyawansave;
+	string username, password, add_again, buffer, data, name, address, birth_date_place, salary, data_bio_karyawan;
+	while (true) {
+		clr_screen();
+		cout << banner << endl;
+		cout << "Tambah akun karyawan" << endl;
+
+		// always check username if already regristed
+		while (true) {
+			cout << "Username : ";
+			cin >> username;
+			// Checking username
+			if (check_already_account(username, "karyawan")) {
+				cout << "Akun "<< username <<"telah terdaftar sebelumnya!" << endl;
+				cout << "Gunakan username lain untuk menambahkan akun baru" << endl;
+			} else { // braek if username not already
+				break;
+			}
+		}
+
+		// input password
+		cout << "Password : ";
+		cin >> password;
+
+
+		// input information account karyawan
+		cout << "Nama : ";
+		cin >> name;
+
+		cout << "Tempat tanggal lahir : ";
+		cin >> birth_date_place;
+
+		cout << "Asal : ";
+		cin >> address;
+
+		cout << "Gaji : ";
+		cin >> salary;		
+
+		// read karyawan.txt and save to var data
+		karyawan.open("db/karyawan.txt");
+		while(!karyawan.eof()) {
+			getline(karyawan, buffer);
+			data+=buffer+"\n";
+		}
+		karyawan.close();
+		// add new username, password
+		data+=username+" "+password;
+		// saving to file
+		karyawansave.open("db/karyawan.txt");
+		karyawansave << data;
+		karyawansave.close();
+
+		// read bio_karyawan.txt and save to var data
+		bio_karyawan.open("db/bio_karyawan.txt");
+		while(!bio_karyawan.eof()) {
+			getline(bio_karyawan, buffer);
+			data_bio_karyawan+=buffer+"\n";
+		}
+		bio_karyawan.close();
+		// add new bio data
+		data_bio_karyawan+=name+" "+username+" "+password+" "+birth_date_place+" "+address+" "+salary;
+		// saving to file
+		bio_karyawansave.open("db/bio_karyawan.txt");
+		bio_karyawansave << data_bio_karyawan;
+		bio_karyawansave.close();		
+
+		cout << "Akun berhasil di tambahkan" << endl;
+		cout << "Apakah ingin menambahkan akun lagi? (y) : ";
+		cin >> add_again;
+		if ((add_again == "y") | (add_again == "Y")) {
+
+		} else {
+			break;
+		}
+	}
+}
+
+
 void admin_menu() {
 	clr_screen();
 	cout << banner << endl;
@@ -275,13 +379,15 @@ void admin() {
 	admin_menu();
 	while (true) {
 		cout << "Pilih : ";
-		cin >> choice;
+		getline(cin, choice);
 		if (choice == "0"){
 			break;
 		} else if (choice == "1") {
 			add_admin_account();
 		} else if (choice == "2") {
 			change_paswd("admin");
+		} else if (choice == "3") {
+			add_karyawan_account();
 		}
 		else {
 			cout << "menu berikutnya masih tahap pengembangan" << endl;
@@ -301,9 +407,16 @@ int main(){
 		// Login input
 		cout << "Login" << endl;
 		cout << "Username : ";
-		cin >> username;
+		getline(cin, username);
 		cout << "Password : ";
-		cin >> password;
+		getline(cin, password);
+
+		if (str_in_str(username, " ")) {
+			username.replace(username.find(" "), 1, "_-_");
+		}
+		if (str_in_str(password, " ")) {
+			password.replace(password.find(" "), 1, "_-_");
+		}
 
 		// Check if login as admin
 		if (login(username, password) == "admin") {
@@ -316,7 +429,7 @@ int main(){
 		} else { // statment for wrong username or password
 			cout << "Wrong username or password" << endl;
 			cout << "ingin login ulang? (y/n) : ";
-			cin >> x;
+			getline(cin, x);
 			if ((x == "n") | (x == "N")) {
 				break;
 			} else if ((x == "y") | (x == "Y")) {
