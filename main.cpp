@@ -299,6 +299,7 @@ void add_karyawan_account() {
 	ifstream karyawan, bio_karyawan;
 	ofstream karyawansave, bio_karyawansave;
 	string username, password, add_again, buffer, data, name, address, birth_date_place, salary, data_bio_karyawan;
+	int i;
 	while (true) {
 		clr_screen();
 		cout << banner << endl;
@@ -307,7 +308,12 @@ void add_karyawan_account() {
 		// always check username if already regristed
 		while (true) {
 			cout << "Username : ";
-			cin >> username;
+			getline(cin, username);
+			// replacing space with unique string
+			if (str_in_str(username, " ")) {
+				username.replace(username.find(" "), 1, "_-_");
+			}
+
 			// Checking username
 			if (check_already_account(username, "karyawan")) {
 				cout << "Akun "<< username << "telah terdaftar sebelumnya!" << endl;
@@ -319,21 +325,57 @@ void add_karyawan_account() {
 
 		// input password
 		cout << "Password : ";
-		cin >> password;
-
+		getline(cin, password);
+		// replacing space with unique string
+		if (str_in_str(password, " ")) {
+			password.replace(password.find(" "), 1, "_-_");
+		}
 
 		// input information account karyawan
 		cout << "Nama : ";
-		cin >> name;
+		getline(cin, name);
+		// replacing space with unique string
+		i = 0;
+		while (i <= name.length()){
+			if (str_in_str(name, " ")) {
+				name.replace(name.find(" "), 1, "_-_");
+			}
+			i++;
+		}
+
 
 		cout << "Tempat tanggal lahir : ";
-		cin >> birth_date_place;
+		getline(cin, birth_date_place);
+		// replacing space with unique string
+		i = 0;
+		while (i <= birth_date_place.length()){
+			if (str_in_str(birth_date_place, " ")) {
+				birth_date_place.replace(birth_date_place.find(" "), 1, "_-_");
+			}
+			i++;
+		}
 
 		cout << "Asal : ";
-		cin >> address;
+		getline(cin, address);
+		// replacing space with unique string
+		i = 0;
+		while (i <= address.length()){
+			if (str_in_str(address, " ")) {
+				address.replace(address.find(" "), 1, "_-_");
+			}
+			i++;
+		}
 
 		cout << "Gaji : ";
-		cin >> salary;		
+		getline(cin, salary);
+		// replacing space with unique string
+		i = 0;
+		while (i <= salary.length()){
+			if (str_in_str(salary, " ")) {
+				salary.replace(salary.find(" "), 1, "_-_");
+			}
+			i++;
+		}
 
 		// read karyawan.txt and save to var data
 		karyawan.open("db/karyawan.txt");
@@ -401,6 +443,8 @@ void admin() {
 			change_paswd("admin");
 		} else if (choice == "3") {
 			add_karyawan_account();
+		} else if (choice == "4") {
+			change_paswd("karyawan");
 		}
 		else {
 			cout << "menu berikutnya masih tahap pengembangan" << endl;
