@@ -144,13 +144,13 @@ void add_admin_account() {
 			getline(cin, username);
 
 			// replacing space with unique string
-			if (str_in_str(username, "_-_")) {
+			if (str_in_str(username, " ")) {
 				username.replace(username.find(" "), 1, "_-_");
 			}
 
 			// Checking username
 			if (check_already_account(username, "admin")) {
-				cout << "Akun "<< username <<"telah terdaftar sebelumnya!" << endl;
+				cout << "Akun "<< username <<" telah terdaftar sebelumnya!" << endl;
 				cout << "Gunakan username lain untuk menambahkan akun baru" << endl;
 			} else { // braek if username not already
 				break;
@@ -162,7 +162,7 @@ void add_admin_account() {
 		getline(cin, password);
 
 		// replacing space with unique string
-		if (str_in_str(password, "_-_")) {
+		if (str_in_str(password, " ")) {
 			password.replace(password.find(" "), 1, "_-_");
 		}
 
@@ -220,6 +220,10 @@ void change_paswd(string type_account) {
 		i++;
 		file >> data;
 		if ((i%2) != 0) {
+			// replacing space with unique string
+			if (str_in_str(data, "_-_")) {
+				data.replace(data.find("_-_"), 3, " ");
+			}
 			cout << data << endl;
 		}
 	}
@@ -228,11 +232,20 @@ void change_paswd(string type_account) {
 	cout << "\n";
 	while (true) {
 		cout << "Masukkan username : ";
-		cin >> username;
+		getline(cin, username);
+		// replacing space with unique string
+		if (str_in_str(username, " ")) {
+			username.replace(username.find(" "), 1, "_-_");
+		}
 		i = 0;
 		if (check_already_account(username, type_account)) {
 			cout << "Masukkan password baru : ";
-			cin >> password;
+			getline(cin, password);
+
+			// replacing space with unique string
+			if (str_in_str(password, " ")) {
+				password.replace(password.find(" "), 1, "_-_");
+			}
 
 			// Update password
 			file.open(path);
@@ -256,7 +269,7 @@ void change_paswd(string type_account) {
 
 			cout << "Password berhasil di update" << endl;
 			cout << "Apakah ingin mengubah password lagi? (y) : ";
-			cin >> change_again;
+			getline(cin, change_again);
 			if ((change_again == "y") | (change_again == "Y")) {
 				// clear screen, and view banner
 				clr_screen();
@@ -297,7 +310,7 @@ void add_karyawan_account() {
 			cin >> username;
 			// Checking username
 			if (check_already_account(username, "karyawan")) {
-				cout << "Akun "<< username <<"telah terdaftar sebelumnya!" << endl;
+				cout << "Akun "<< username << "telah terdaftar sebelumnya!" << endl;
 				cout << "Gunakan username lain untuk menambahkan akun baru" << endl;
 			} else { // braek if username not already
 				break;
@@ -352,7 +365,7 @@ void add_karyawan_account() {
 
 		cout << "Akun berhasil di tambahkan" << endl;
 		cout << "Apakah ingin menambahkan akun lagi? (y) : ";
-		cin >> add_again;
+		getline(cin, add_again);
 		if ((add_again == "y") | (add_again == "Y")) {
 
 		} else {
