@@ -197,9 +197,9 @@ void change_paswd(string type_account) {
 	// declarate var
 	int i;
 	string result = "";
-	string path, data, username, password, change_again;
-	ifstream file;
-	ofstream savefile;
+	string path, data, username, password, change_again, buffer;
+	ifstream file, karyawan;
+	ofstream savefile, karyawansave;
 
 	// clear screen, and view banner
 	clr_screen();
@@ -247,6 +247,10 @@ void change_paswd(string type_account) {
 				password.replace(password.find(" "), 1, "_-_");
 			}
 
+			// reverse unique string
+			if (str_in_str(username, "_-_")) {
+				username.replace(username.find("_-_"), 3, " ");
+			}
 			// Update password
 			file.open(path);
 			while(!file.eof()) {
@@ -267,6 +271,39 @@ void change_paswd(string type_account) {
 			savefile << result;
 			savefile.close();
 
+
+			if (type_account == "karyawan") {
+				// Update karyawan bio
+				result = "";
+				karyawan.open("db/bio_karyawan.txt");
+				while(!karyawan.eof()) {
+					karyawan >> buffer;
+					result+=" "+buffer;
+					karyawan >> buffer;
+					result+=" "+buffer;
+					if (buffer == username) {
+						karyawan >> buffer;
+						result+=" "+password;
+					} else {
+						karyawan >> buffer;
+						result+=" "+buffer;
+					}
+					karyawan >> buffer;
+					result+=" "+buffer;
+					karyawan >> buffer;
+					result+=" "+buffer;
+					karyawan >> buffer;
+					result+=" "+buffer;
+				}
+				karyawan.close();
+
+				// saving to file
+				karyawansave.open("db/bio_karyawan.txt");
+				karyawansave << result;
+				karyawansave.close();
+			}
+
+
 			cout << "Password berhasil di update" << endl;
 			cout << "Apakah ingin mengubah password lagi? (y) : ";
 			getline(cin, change_again);
@@ -274,12 +311,17 @@ void change_paswd(string type_account) {
 				// clear screen, and view banner
 				clr_screen();
 				cout << banner << endl;
+				i = 0;
 				cout << "Daftar username "<< type_account <<" :" << endl;
 				file.open(path);
 				while(!file.eof()) {
 					i++;
 					file >> data;
 					if ((i%2) != 0) {
+						// replacing space with unique string
+						if (str_in_str(data, "_-_")) {
+							data.replace(data.find("_-_"), 3, " ");
+						}
 						cout << data << endl;
 					}
 				}
