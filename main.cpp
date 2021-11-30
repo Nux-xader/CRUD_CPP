@@ -459,6 +459,63 @@ void add_karyawan_account() {
 }
 
 
+// void view_bio_karyawan() {
+// 	int i = 1;
+// 	int x = 0;
+// 	int y = 0;
+// 	string buffer;
+// 	ifstream file;
+
+// 	clr_screen();
+// 	cout << "\t\t\t\t" << banner << endl;
+// 	cout << "-----------------------------------------------------------------------------------------------------" << endl;
+// 	cout << "| Nama\t\t| Username\t| Password\t| Tempat Tgl lahir\t| Asal\t\t| Gaji\t|" << endl;
+// 	cout << "-----------------------------------------------------------------------------------------------------" << endl;
+// 	file.open("db/bio_karyawan.txt");
+// 	while(!file.eof()) {
+// 		getline(file, buffer);
+// 		y = buffer.length();
+// 		while (true) {
+// 			if (x >= y) {
+// 				break;
+// 			}
+// 			x+=1;
+// 			if (str_in_str(buffer, " ")) {
+// 				buffer.replace(buffer.find(" "), 1, "\t|");
+// 			}
+// 		}
+// 		x = 1;
+// 		while (true) {
+// 			if (str_in_str(buffer, "_-_")) {
+// 				buffer.replace(buffer.find("_-_"), 3, " ");
+// 			}
+// 			if (x >= y) {
+// 				break;
+// 			}
+// 			x++;
+// 		}
+
+// 		x = 1;
+// 		while (true) {
+// 			if (str_in_str(buffer, "\t|")) {
+// 				buffer.replace(buffer.find("\t|"), 3, "\t| ");
+// 			}
+// 			if (x >= y) {
+// 				break;
+// 			}
+// 			x++;
+// 		}
+
+// 		cout << buffer << endl;
+// 		break;
+// 	}
+
+// 	file.close();
+// 	cout << "[Press Enter to Continue]";
+// 	getline(cin, buffer);
+// }
+
+
 void admin_menu() {
 	clr_screen();
 	cout << banner << endl;
@@ -467,7 +524,6 @@ void admin_menu() {
 	cout << "2. Ubah password admin" << endl;
 	cout << "3. Tambah akun karyawan" << endl;
 	cout << "4. Ubah password karyawan" << endl;
-	cout << "5. Lihat data karyawan" << endl;
 	cout << "0. Keluar\n" << endl;
 }
 
@@ -487,8 +543,7 @@ void admin() {
 			add_karyawan_account();
 		} else if (choice == "4") {
 			change_paswd("karyawan");
-		}
-		else {
+		} else {
 			cout << "menu berikutnya masih tahap pengembangan" << endl;
 			break;
 		}
