@@ -627,10 +627,22 @@ int string_to_int(string data) {
 }
 
 
+string int_to_string (int data) {
+	string result;
+	stringstream ss;
+	ss << data;
+	ss >> result;
+	return result;
+}
+
+
+
+// function view nota
 void nota(string data, bool discount) {
 	string buffer, subdata;
 	int total = 0;
 	int i = 0;
+	int num = 1;
 	stringstream ss_data(data);
 
 	// clearing screen, view banner
@@ -643,7 +655,17 @@ void nota(string data, bool discount) {
 			total+=string_to_int(subdata);
 			cout << integer_formater(subdata) << endl;
 		} else {
-			cout << i+1 << ". " << subdata << " ";
+			// replace unique string to space
+			while (true) {
+				if (str_in_str(subdata, "_-_")) {
+					subdata.replace(subdata.find("_-_"), 3, " ");
+				} else {
+					break;
+				}
+			}
+			// view menu order
+			cout << num << ". " << subdata << " ";
+			num++;
 		}
 		i++;
 	}
@@ -654,7 +676,7 @@ void nota(string data, bool discount) {
 	}
 
 	cout << "--------------------------------" << endl;
-	cout << "Total\t:" << total << endl;
+	cout << "Total\t: " << total << endl;
 
 	// View discount description
 	if (discount) {
@@ -692,7 +714,9 @@ void karyawan() {
 	string choice, buffer, take_it_home, voucher_code;
 	int total, total_menu, choice_int;
 	int i = 1;
+	int count_table = 5;
 	string orders = "";
+	string table = "ABC";
 
 	// select menu foods
 	total_menu = view_menu("foods");
@@ -751,9 +775,41 @@ void karyawan() {
 		} else {
 			nota(orders, false);
 		}
-	} else {}
+	} else {
+		clr_screen();
+		cout << banner << endl;
+		cout << "Pilih meja :" << endl;
+		for (int i = 1; i <= count_table; ++i) {
+			for (int j = 0; j < table.length(); ++j) {
+				cout << i << table[j] << "\t";
+			}
+			cout << endl;
+		}
+		cout << endl;
 
-	cout << orders << endl;
+		while (true){
+			cout << "Pilih :";
+			getline(cin , choice);
+
+			// checking invalid input
+			buffer = "invalid";
+			for (int i = 1; i <= count_table; ++i) {
+				for (int j = 0; j < table.length(); ++j) {
+					if ((int_to_string(i)+table[j]) == choice) {
+						buffer = "valid";
+						break;
+					}
+				}
+			}
+			if (buffer == "invalid") {
+				cout << "Mohon pilih meja dengan benar!" << endl;
+				continue;
+			}
+
+			break;
+		}
+		nota(orders, false);
+	}
 }
 
 
