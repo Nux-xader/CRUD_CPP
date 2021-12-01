@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <sstream>
 
 using namespace std;
 // declarate banner var
@@ -516,6 +517,36 @@ void add_karyawan_account() {
 // }
 
 
+// Fuction for reverse string
+string reverseStr(string data) {
+	string result = "";
+	for (int i=data.length()-1; i>=0; i--) {
+		result+=data[i];
+	}
+	return result;
+}
+
+string integer_formater(string num) {
+	string result = "";
+
+	// reverse string num
+	num = reverseStr(num);
+
+	// adding . when 3x loops
+	for (int i=1; i <= num.length(); ++i) {
+		result+=num[i-1];
+		if (((i%3) == 0) and (i < num.length())) {
+			result+=".";
+		}
+	}
+
+	// reverse string result
+	result = reverseStr(result);
+
+	return result;
+}
+
+
 void admin_menu() {
 	clr_screen();
 	cout << banner << endl;
@@ -551,7 +582,182 @@ void admin() {
 	}
 }
 
-int main(){
+
+// view list menu
+int view_menu(string type_menu) {
+	ifstream menu;
+	string buffer;
+	int num = 1;
+
+	// clearing screen, view banner
+	clr_screen();
+	cout << banner << endl;
+
+	// read db menu
+	if (type_menu == "foods") {
+		menu.open("db/foods.txt");
+	} else if (type_menu == "drinks") {
+		menu.open("db/drinks.txt");
+	}
+
+	while(!menu.eof()) {
+		menu >> buffer;
+		for (int i = 0; i < buffer.length(); ++i) {
+			if (str_in_str(buffer, "_-_")) {
+				buffer.replace(buffer.find("_-_"), 3, " ");
+			}
+		}
+
+		cout << num << ". " << buffer;
+		menu >> buffer;
+		cout << " Rp " << integer_formater(buffer) << endl;
+		num++;
+	}
+	cout << "0. Tidak memesan makanan\n" << endl;
+
+	return num;
+}
+
+
+// function for convert string to integer
+int string_to_int(string data) {
+	int result = 0;
+	result = stoi(data);
+	return result;
+}
+
+
+void nota(string data, bool discount) {
+	string buffer, subdata;
+	int total = 0;
+	int i = 0;
+	stringstream ss_data(data);
+
+	// clearing screen, view banner
+	clr_screen();
+	cout << banner << endl;
+
+	// calc total and view list orders
+	while(getline(ss_data, subdata, ' ')) {
+		if ((i+1)%2 == 0) {
+			total+=string_to_int(subdata);
+			cout << integer_formater(subdata) << endl;
+		} else {
+			cout << i+1 << ". " << subdata << " ";
+		}
+		i++;
+	}
+
+	// use discount if true
+	if (discount) {
+		total = total-(total*0.1);
+	}
+
+	cout << "--------------------------------" << endl;
+	cout << "Total\t:" << total << endl;
+
+	// View discount description
+	if (discount) {
+		cout << "Total sudah dengan diskon sebesar 10%" << endl;
+	}
+
+	cout << "\n[Press Enter to Continue]";
+	getline(cin, buffer);
+}
+
+
+string get_item(int choice, string type_menu) {
+	ifstream menu;
+	string buffer;
+	int i = 0;
+
+	// read db menu
+	if (type_menu == "foods") {
+		menu.open("db/foods.txt");
+	} else if (type_menu == "drinks") {
+		menu.open("db/drinks.txt");
+	}
+
+	while(!menu.eof()) {
+		i++;
+		getline(menu, buffer);
+		if (i == choice) {
+			return buffer;
+		}
+	}
+	return buffer;
+}
+
+void karyawan() {
+	string choice, buffer, take_it_home, voucher_code;
+	int total, total_menu, choice_int;
+	int i = 1;
+	string orders = "";
+
+	// select menu foods
+	total_menu = view_menu("foods");
+
+	while (true) {
+		cout << "Pilih : ";
+		getline(cin, choice);
+		choice_int = string_to_int(choice);
+		if ((choice_int <= total_menu) and (choice_int > 0)) {
+			buffer = get_item(choice_int, "foods");
+			orders+=buffer+" ";
+			cout << "Ingin memesan makanan lagi? (y/n) : ";
+			getline(cin, buffer);
+			if ((buffer == "y") | buffer == "Y") {
+				total_menu = view_menu("foods");
+				continue;
+			}
+			break;
+		} else if (choice_int == 0) {
+			break;
+		}
+		cout << "Mohon pilih makanan berdasarkan angka yang tersedia" << endl;
+	}
+
+	// select menu drinks
+	total_menu = view_menu("drinks");
+
+	while (true) {
+		cout << "Pilih : ";
+		getline(cin, choice);
+		choice_int = string_to_int(choice);
+		if ((choice_int <= total_menu) and (choice_int > 0)) {
+			buffer = get_item(choice_int, "drinks");
+			orders+=buffer+" ";
+			cout << "Ingin memesan makanan lagi? (y/n) : ";
+			getline(cin, buffer);
+			if ((buffer == "y") | buffer == "Y") {
+				total_menu = view_menu("drinks");
+				continue;
+			}
+			break;
+		} else if (choice_int == 0) {
+			break;
+		}
+		cout << "Mohon pilih makanan berdasarkan angka yang tersedia" << endl;
+	}
+
+	cout << "Bawa pulang? (y/n) : ";
+	getline(cin, take_it_home);
+	if ((take_it_home == "y") | take_it_home == "Y") {
+		// statmen if customer will take it home
+		cout << "Masukkan kode voucher untuk mendapatkan diskon 10%\n(langsung enter jika tidak ada voucher) : ";
+		getline(cin, voucher_code);
+		if (voucher_code == "MAKANDIRUMAH") {
+			nota(orders, true);
+		} else {
+			nota(orders, false);
+		}
+	} else {}
+
+	cout << orders << endl;
+}
+
+
+int main() {
 	// declarate variable
 	string username, password, x;
 	while (true) {
@@ -578,7 +784,7 @@ int main(){
 			break;
 		} else if (login(username, password) == "karyawan") { // Check if login as karyawan
 			cout << "Anda login sebagai karyawan" << endl;
-			cout << "menu selanjutnya masih tahap pengembangan" << endl;
+			karyawan();
 			break;
 		} else { // statment for wrong username or password
 			cout << "Wrong username or password" << endl;

@@ -1,0 +1,7 @@
+Burger 35000
+Pizza 70000
+Steak_-_Spesial 259000
+Lobster 85000
+Pasta 40000
+Tiramisu 55000
+Sushi 65000
