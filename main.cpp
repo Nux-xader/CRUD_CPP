@@ -1,27 +1,29 @@
-// include standard library
+// meng include beberapa standar library yang di perlukan
+
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <sstream>
 
 using namespace std;
-// declarate banner var
+// deklarasikan variabel banner
 string banner = "\tRESTO APP V1.0.0\n";
 
 
-// Function for clear screen
+// Function untuk clear terminal
 void clr_screen() {
-	// if oprating system is windows 32bit or 64bit use cls
+	// menggunakan system("cls") jika sistem oprasi nya windows
 	#ifdef _WIN32
 		system("cls");
-	// if oprating system not windows use clear
+	// menggunakan system("clear") jika sistem oprasi nya selain windows
 	#else
 	    system("clear");
 	#endif
 }
 
 
-// check contains string
+// function untuk mengecek apakah sub string terdapat di dalam string
+// jika sub string terdapat dalam string return true, jika tidak return false
 bool str_in_str(string str1, string str2) {
 	if (str1.find(str2) != string::npos) {
 		return true;
@@ -31,22 +33,31 @@ bool str_in_str(string str1, string str2) {
 	return false;
 }
 
-
-// return admin if login as admin, and return karyawan if login as karyawan
+/*
+function untuk mengecek tipe akun yand di gunakan untuk login
+return admin jika akun terdapat pada database admin.txt
+return karyawan jika akun terdapat pada database karywan.txt
+return wrong jika akun tidak terdaftar atau password salah
+*/
 string login(string username, string password) {
-	// decarate var
+	// deklarasi variable admin, karyawan yang bertipe data ifstream
 	ifstream admin, karyawan;
+	// deklarasi variable data untuk menampun setiap data username, dan password
 	string data;
+	// deklarasi variabel i yang bertipe data integer 0
 	int i = 0;
 
-	// Check admin account
+	// Blok kode untuk mengecek database admin.txt, jika akun di temukan langsung di return
 	admin.open("db/admin.txt");
+	// melakukan looping untuk membaca setiap baris data dan spasi
 	while(!admin.eof()) {
 		i++;
 		admin >> data;
+		// jika jumlah loopingan modulus 2 = 0 maka cek username
 		if ((i%2) != 0) {
 			if (username == data) {
 				admin >> data;
+				// jika userame di temukan, cek passwordnya, jika salah return wrong
 				if (password == data) {
 					admin.close();
 					return "admin";
@@ -57,11 +68,14 @@ string login(string username, string password) {
 			}
 		}
 	}
+	// menutup objek admin, karena sebelumnya telah membuka file admin.txt
 	admin.close();
 
-	// reset value i
+	// reset nilai i dengan 0
 	i = 0;
-	// Check karyawan account
+	// Blok kode untuk mengecek database admin.txt, jika akun di temukan langsung di return
+	// logika nya sama seperti pada pengecekan akun admin
+	// hanya saja jika akun telah di temukan di database admin kode di bawah ini tidak di eksekusi
 	karyawan.open("db/karyawan.txt");
 	while(!karyawan.eof()) {
 		i++;
@@ -79,24 +93,32 @@ string login(string username, string password) {
 			}
 		}
 	}
+	// menutup objek karyawan, karena sebelumnya telah membuka file admin.txt
 	karyawan.close();
+	// return wrong jika akun sama sekali tidak di temukan
 	return "wrong";
 }
 
 
-// Check if account already regristed
+// Function untuk mengecek apakah akun telah terdaftar
+// return true jika telah terdaftar, return flase jika belum terdaftar
 bool check_already_account(string username, string type_account) {
-	// decarate var
+	// deklarasi variable admin, karyawan yang bertipe data ifstream
 	ifstream admin, karyawan;
+	// deklarasi variable data untuk menampun setiap data username
 	string data;
 
-	// Check admin account
+	// Kode dalam if (type_account == "admin") sama seperti mengecek tipe akun yang login
+	// hanya saja tidak mengecek passwordnya (yang di cek hanya uername)
 	if (type_account == "admin") {
+		// jalankan statment ini jika tipe akun yang ingin di cek adalah admin
 		int i = 0;
+		// buka file admin.txt
 		admin.open("db/admin.txt");
 		while(!admin.eof()) {
 			i++;
 			admin >> data;
+			// selalu cek username jika jumlah loopingan modulus 2 = 0
 			if ((i%2) != 0) {
 				if (username == data) {
 					admin.close();
@@ -108,7 +130,8 @@ bool check_already_account(string username, string type_account) {
 		return false;
 
 	} else if (type_account == "karyawan") {
-		// Check karyawan account
+		// jalankan statment ini jika tipe akun yang ingin di cek adalah karyawan
+		// logika nya sama seperti saat mengecek akun admin hanya saja file yg di baca adalah karyawan.txt
 		int i = 0;
 		karyawan.open("db/karyawan.txt");
 		while(!karyawan.eof()) {
@@ -129,60 +152,70 @@ bool check_already_account(string username, string type_account) {
 }
 
 
-
+// function tanpa return untuk menambahkan akun admin
 void add_admin_account() {
+	// deklarasi variable admin dan adminsave
 	ifstream admin;
 	ofstream adminsave;
+	// deklarasi variable dengan tipe data sting
 	string username, password, add_again, buffer, data;
+
+	// melakukan while loop dengan kondisi selalu true agar bisa menambahkan akun lagi
 	while (true) {
+		// memanggil function clear screen
 		clr_screen();
+		// menampilkan banner dan beberapa teks
 		cout << banner << endl;
 		cout << "Tambah akun admin" << endl;
 
-		// always check username if already regristed
+		// melakukan while loop agar jika username yg di inputkan telah terdaftar, pengguna bisa memasukkan ulang username nya
 		while (true) {
 			cout << "Username : ";
 			getline(cin, username);
 
-			// replacing space with unique string
+			// kode untuk me replace spasi dengan _-_
 			if (str_in_str(username, " ")) {
 				username.replace(username.find(" "), 1, "_-_");
 			}
 
-			// Checking username
+			// membuat percabangan dengan kondisi sesuai return atau nilai kembalian dari fungsi check_already_account
 			if (check_already_account(username, "admin")) {
+				// menjalankan statment ini jika username terlah terdaftar
 				cout << "Akun "<< username <<" telah terdaftar sebelumnya!" << endl;
 				cout << "Gunakan username lain untuk menambahkan akun baru" << endl;
-			} else { // braek if username not already
+			} else { // hentikan while loop jika username belum terdaftar, agar bisa menginpukan password
 				break;
 			}
 		}
 
-		// input password
+		// meminta pengguna untuk memasukkan password
 		cout << "Password : ";
 		getline(cin, password);
 
-		// replacing space with unique string
+		// kode untuk me replace spasi dengan _-_
 		if (str_in_str(password, " ")) {
 			password.replace(password.find(" "), 1, "_-_");
 		}
 
 
-		// read admin.txt and save to var data
+		// membaca seluruh data pada file admin.txt dan menyimpannya pada variable data
 		admin.open("db/admin.txt");
 		while(!admin.eof()) {
 			getline(admin, buffer);
 			data+=buffer+"\n";
 		}
 		admin.close();
-		// add new username, password
+		// menambahkan username dan password baru pada variable data
 		data+=username+" "+password;
-		// saving to file
+		// menyimpan nilai variable data pada file admin.txt
 		adminsave.open("db/admin.txt");
 		adminsave << data;
 		adminsave.close();
 
+		// menampilkan info bahwa akun berhasil di tambahkan
 		cout << "Akun berhasil di tambahkan" << endl;
+		// meminta user untuk menginputkan y jika ingin menambahkan lagi
+		// atau input selain y jika tidak ingin menambahkan lagi/kembali ke menu admin
 		cout << "Apakah ingin menambahkan akun lagi? (y) : ";
 		getline(cin, add_again);
 		if ((add_again == "y") | (add_again == "Y")) {
@@ -194,26 +227,32 @@ void add_admin_account() {
 }
 
 
+// fungsi tanpa return untuk mengubah password
 void change_paswd(string type_account) {
-	// declarate var
+	// deklarasi variabel
+	// ifstream untuk variable yang dapat membaca data
+	// ofstream untuk variable yg dapat menulis data
 	int i;
 	string result = "";
 	string path, data, username, password, change_again, buffer;
 	ifstream file, karyawan;
 	ofstream savefile, karyawansave;
 
-	// clear screen, and view banner
+	// memanggil fungsi clear screen dan meampilkan banner
 	clr_screen();
 	cout << banner << endl;
 
 
-	// checking account type
+	// mengecek akun tipe yang ingin di ubah passwordnya
+	// variable path akan bernilai db/admin.txt jika akun admin
+	// dan akan bernilai db/karyawan.txt jika akun karyawan
 	if (type_account == "admin") {
 		path = "db/admin.txt";
 	} else if (type_account == "karyawan") {
 		path = "db/karyawan.txt";
 	}
 
+	// kode untuk menampilkan list username yang telah terdaftar
 	i = 0;
 	cout << "Daftar username "<< type_account <<" :" << endl;
 	file.open(path);
@@ -230,29 +269,32 @@ void change_paswd(string type_account) {
 	}
 	file.close();
 
+	// membuat while loop dengan kondisi true agar pengguna dapat memasukkan userame ulang jika yang di inputkan salah
 	cout << "\n";
 	while (true) {
 		cout << "Masukkan username : ";
 		getline(cin, username);
-		// replacing space with unique string
+		// replace spasi dengan _-_
 		if (str_in_str(username, " ")) {
 			username.replace(username.find(" "), 1, "_-_");
 		}
 		i = 0;
+		// mengecek apakah username akun terdaftar
 		if (check_already_account(username, type_account)) {
+			// jika akun telah terdaftar minta pengguna memamsukkan password baru
 			cout << "Masukkan password baru : ";
 			getline(cin, password);
 
-			// replacing space with unique string
+			// replace spasi dengan _-_
 			if (str_in_str(password, " ")) {
 				password.replace(password.find(" "), 1, "_-_");
 			}
 
-			// reverse unique string
+			// replace _-_ dengan spasi
 			if (str_in_str(username, "_-_")) {
 				username.replace(username.find("_-_"), 3, " ");
 			}
-			// Update password
+			// membaca database akun dan skip data ketika userame nya di temukan (menghapus akun)
 			file.open(path);
 			while(!file.eof()) {
 				file >> data;
@@ -265,61 +307,34 @@ void change_paswd(string type_account) {
 				}
 			}
 			file.close();
+			// menambahkan usernam yang tadi terdaftar dan menggunakan password baru
 			result+=username+" "+password;
 
-			// saving to file
+			// menyimpan data
 			savefile.open(path);
 			savefile << result;
 			savefile.close();
 
-
-			if (type_account == "karyawan") {
-				// Update karyawan bio
-				result = "";
-				karyawan.open("db/bio_karyawan.txt");
-				while(!karyawan.eof()) {
-					karyawan >> buffer;
-					result+=" "+buffer;
-					karyawan >> buffer;
-					result+=" "+buffer;
-					if (buffer == username) {
-						karyawan >> buffer;
-						result+=" "+password;
-					} else {
-						karyawan >> buffer;
-						result+=" "+buffer;
-					}
-					karyawan >> buffer;
-					result+=" "+buffer;
-					karyawan >> buffer;
-					result+=" "+buffer;
-					karyawan >> buffer;
-					result+=" "+buffer;
-				}
-				karyawan.close();
-
-				// saving to file
-				karyawansave.open("db/bio_karyawan.txt");
-				karyawansave << result;
-				karyawansave.close();
-			}
-
-
+			// memnampilkan bahwa password berhasil di update
 			cout << "Password berhasil di update" << endl;
 			cout << "Apakah ingin mengubah password lagi? (y) : ";
+			// meminta user menginpitkan y jika ingin mengubah password akun lagi
+			// input selain y jika ingin kembali ke menu utama
 			getline(cin, change_again);
 			if ((change_again == "y") | (change_again == "Y")) {
-				// clear screen, and view banner
+				// panggil fungsi clear screen dan tampilkan bannner
 				clr_screen();
 				cout << banner << endl;
 				i = 0;
+				// menampilkan list username yang terdaftar
+				// kode ini logika nya sama seperi kode di awal fungsi ini
 				cout << "Daftar username "<< type_account <<" :" << endl;
 				file.open(path);
 				while(!file.eof()) {
 					i++;
 					file >> data;
 					if ((i%2) != 0) {
-						// replacing space with unique string
+						// replace spasi dengan _-_
 						if (str_in_str(data, "_-_")) {
 							data.replace(data.find("_-_"), 3, " ");
 						}
@@ -338,117 +353,65 @@ void change_paswd(string type_account) {
 }
 
 
+// fungsi untuk menambahkan akun karyawan
 void add_karyawan_account() {
+	// deklarasikan variabel
 	ifstream karyawan, bio_karyawan;
 	ofstream karyawansave, bio_karyawansave;
 	string username, password, add_again, buffer, data, name, address, birth_date_place, salary, data_bio_karyawan;
 	int i;
+	// melakukan while loop agar bisa menambahkan akun lagi
 	while (true) {
+		// memanggil fungsi clear screen dan menampilkan banner
 		clr_screen();
 		cout << banner << endl;
 		cout << "Tambah akun karyawan" << endl;
 
 		// always check username if already regristed
 		while (true) {
+			// meminta untuk menginputkan username
 			cout << "Username : ";
 			getline(cin, username);
-			// replacing space with unique string
+			// replace spasi dengan _-_
 			if (str_in_str(username, " ")) {
 				username.replace(username.find(" "), 1, "_-_");
 			}
 
-			// Checking username
+			// jika username telah terdaftar minta untuk memasukkan username lain
 			if (check_already_account(username, "karyawan")) {
 				cout << "Akun "<< username << "telah terdaftar sebelumnya!" << endl;
 				cout << "Gunakan username lain untuk menambahkan akun baru" << endl;
-			} else { // braek if username not already
+			} else { // jika tidak break loopingan
 				break;
 			}
 		}
 
-		// input password
+		// meminta user untuk menginputkan passowrd
 		cout << "Password : ";
 		getline(cin, password);
-		// replacing space with unique string
+		// replace spasi dengan _-_
 		if (str_in_str(password, " ")) {
 			password.replace(password.find(" "), 1, "_-_");
 		}
 
-		// input information account karyawan
-		cout << "Nama : ";
-		getline(cin, name);
-		// replacing space with unique string
-		i = 0;
-		while (i <= name.length()){
-			if (str_in_str(name, " ")) {
-				name.replace(name.find(" "), 1, "_-_");
-			}
-			i++;
-		}
-
-
-		cout << "Tempat tanggal lahir : ";
-		getline(cin, birth_date_place);
-		// replacing space with unique string
-		i = 0;
-		while (i <= birth_date_place.length()){
-			if (str_in_str(birth_date_place, " ")) {
-				birth_date_place.replace(birth_date_place.find(" "), 1, "_-_");
-			}
-			i++;
-		}
-
-		cout << "Asal : ";
-		getline(cin, address);
-		// replacing space with unique string
-		i = 0;
-		while (i <= address.length()){
-			if (str_in_str(address, " ")) {
-				address.replace(address.find(" "), 1, "_-_");
-			}
-			i++;
-		}
-
-		cout << "Gaji : ";
-		getline(cin, salary);
-		// replacing space with unique string
-		i = 0;
-		while (i <= salary.length()){
-			if (str_in_str(salary, " ")) {
-				salary.replace(salary.find(" "), 1, "_-_");
-			}
-			i++;
-		}
-
-		// read karyawan.txt and save to var data
+		// membaca data karyawan.txt dan menyimpannya pada variable data
 		karyawan.open("db/karyawan.txt");
 		while(!karyawan.eof()) {
 			getline(karyawan, buffer);
 			data+=buffer+"\n";
 		}
 		karyawan.close();
-		// add new username, password
+		// menambahkan username, password baru
 		data+=username+" "+password;
-		// saving to file
+		// menyimpan data pada file karyawan.txt
 		karyawansave.open("db/karyawan.txt");
 		karyawansave << data;
 		karyawansave.close();
 
-		// read bio_karyawan.txt and save to var data
-		bio_karyawan.open("db/bio_karyawan.txt");
-		while(!bio_karyawan.eof()) {
-			getline(bio_karyawan, buffer);
-			data_bio_karyawan+=buffer+"\n";
-		}
-		bio_karyawan.close();
-		// add new bio data
-		data_bio_karyawan+=name+" "+username+" "+password+" "+birth_date_place+" "+address+" "+salary;
-		// saving to file
-		bio_karyawansave.open("db/bio_karyawan.txt");
-		bio_karyawansave << data_bio_karyawan;
-		bio_karyawansave.close();		
-
+		// memberi tahu jika akun berhasil di tambahkan
 		cout << "Akun berhasil di tambahkan" << endl;
+		// meminta user menginpitkan y jika ingin menambah akun lagi
+		// input selain y jika ingin kembali ke menu utama
 		cout << "Apakah ingin menambahkan akun lagi? (y) : ";
 		getline(cin, add_again);
 		if ((add_again == "y") | (add_again == "Y")) {
@@ -460,64 +423,7 @@ void add_karyawan_account() {
 }
 
 
-// void view_bio_karyawan() {
-// 	int i = 1;
-// 	int x = 0;
-// 	int y = 0;
-// 	string buffer;
-// 	ifstream file;
-
-// 	clr_screen();
-// 	cout << "\t\t\t\t" << banner << endl;
-// 	cout << "-----------------------------------------------------------------------------------------------------" << endl;
-// 	cout << "| Nama\t\t| Username\t| Password\t| Tempat Tgl lahir\t| Asal\t\t| Gaji\t|" << endl;
-// 	cout << "-----------------------------------------------------------------------------------------------------" << endl;
-// 	file.open("db/bio_karyawan.txt");
-// 	while(!file.eof()) {
-// 		getline(file, buffer);
-// 		y = buffer.length();
-// 		while (true) {
-// 			if (x >= y) {
-// 				break;
-// 			}
-// 			x+=1;
-// 			if (str_in_str(buffer, " ")) {
-// 				buffer.replace(buffer.find(" "), 1, "\t|");
-// 			}
-// 		}
-// 		x = 1;
-// 		while (true) {
-// 			if (str_in_str(buffer, "_-_")) {
-// 				buffer.replace(buffer.find("_-_"), 3, " ");
-// 			}
-// 			if (x >= y) {
-// 				break;
-// 			}
-// 			x++;
-// 		}
-
-// 		x = 1;
-// 		while (true) {
-// 			if (str_in_str(buffer, "\t|")) {
-// 				buffer.replace(buffer.find("\t|"), 3, "\t| ");
-// 			}
-// 			if (x >= y) {
-// 				break;
-// 			}
-// 			x++;
-// 		}
-
-// 		cout << buffer << endl;
-// 		break;
-// 	}
-
-// 	file.close();
-// 	cout << "[Press Enter to Continue]";
-// 	getline(cin, buffer);
-// }
-
-
-// Fuction for reverse string
+// Fuction untuk membalikan urutan data string
 string reverseStr(string data) {
 	string result = "";
 	for (int i=data.length()-1; i>=0; i--) {
@@ -526,13 +432,15 @@ string reverseStr(string data) {
 	return result;
 }
 
+
+// fungsi untuk memformat angka pada data string (menambahkan titik (.) pada angka)
 string integer_formater(string num) {
 	string result = "";
 
-	// reverse string num
+	// memanggil fungsi reverseStr untuk membalikkan urutan variabl num
 	num = reverseStr(num);
 
-	// adding . when 3x loops
+	// menambahkan . setiap looping 3 kali
 	for (int i=1; i <= num.length(); ++i) {
 		result+=num[i-1];
 		if (((i%3) == 0) and (i < num.length())) {
@@ -540,13 +448,15 @@ string integer_formater(string num) {
 		}
 	}
 
-	// reverse string result
+	// membalikkan string ke awal lagi
 	result = reverseStr(result);
 
+	// me return nilai variable result
 	return result;
 }
 
 
+// fungsi untuk menampilkan menu admin
 void admin_menu() {
 	clr_screen();
 	cout << banner << endl;
@@ -558,15 +468,19 @@ void admin_menu() {
 	cout << "0. Keluar\n" << endl;
 }
 
+// fungsi yang akan di panggil jika login sebagai admin
 void admin() {
 	string choice;
 	admin_menu();
+	// melakukan while dengan kondisi true agar bisa memilih menu terus menerus
 	while (true) {
 		cout << "Pilih : ";
 		getline(cin, choice);
+		// membuat percabangan jika yang di pilih 0 maka break loopingan
 		if (choice == "0"){
 			break;
 		} else if (choice == "1") {
+			// jika yg di pilih 1 makan panggil fungsi add admin account, dan begitu juga seterusnya
 			add_admin_account();
 		} else if (choice == "2") {
 			change_paswd("admin");
@@ -583,23 +497,25 @@ void admin() {
 }
 
 
-// view list menu
+// menampilkan list menu makanan dan minuman, dan mereturn jumlah menu
 int view_menu(string type_menu) {
+	// delarasi variabel
 	ifstream menu;
 	string buffer;
 	int num = 1;
 
-	// clearing screen, view banner
+	// panggil fungsi clear screen dan tampilkan banner
 	clr_screen();
 	cout << banner << endl;
 
-	// read db menu
+	// membaca database foods atau drinks sesuai nilai dari variabel type_menu
 	if (type_menu == "foods") {
 		menu.open("db/foods.txt");
 	} else if (type_menu == "drinks") {
 		menu.open("db/drinks.txt");
 	}
 
+	// kode untuk menampulkan list menu berserta harga nya
 	while(!menu.eof()) {
 		menu >> buffer;
 		for (int i = 0; i < buffer.length(); ++i) {
@@ -619,7 +535,7 @@ int view_menu(string type_menu) {
 }
 
 
-// function for convert string to integer
+// function untuk mengkonversi data string ke data integer
 int string_to_int(string data) {
 	int result = 0;
 	result = stoi(data);
@@ -627,6 +543,7 @@ int string_to_int(string data) {
 }
 
 
+// function untuk mengkonversi data integer ke string
 string int_to_string (int data) {
 	string result;
 	stringstream ss;
@@ -637,7 +554,7 @@ string int_to_string (int data) {
 
 
 
-// function view nota
+// function untuk menampilkan nota atau tagihan
 void nota(string data, bool discount) {
 	string buffer, subdata;
 	int total = 0;
@@ -645,17 +562,17 @@ void nota(string data, bool discount) {
 	int num = 1;
 	stringstream ss_data(data);
 
-	// clearing screen, view banner
+	// panggil fungsi clear_screen dan tampilkan banner
 	clr_screen();
 	cout << banner << endl;
 
-	// calc total and view list orders
+	// kalkulasi total harga pesanan
 	while(getline(ss_data, subdata, ' ')) {
 		if ((i+1)%2 == 0) {
 			total+=string_to_int(subdata);
 			cout << integer_formater(subdata) << endl;
 		} else {
-			// replace unique string to space
+			// replace _-_ ke spasi
 			while (true) {
 				if (str_in_str(subdata, "_-_")) {
 					subdata.replace(subdata.find("_-_"), 3, " ");
@@ -663,22 +580,23 @@ void nota(string data, bool discount) {
 					break;
 				}
 			}
-			// view menu order
+			// menampilkan list pesanan
 			cout << num << ". " << subdata << " ";
 			num++;
 		}
 		i++;
 	}
 
-	// use discount if true
+	// menggunakan rumus diskon jika memasukkan kode voucher denga benar
 	if (discount) {
 		total = total-(total*0.1);
 	}
 
 	cout << "--------------------------------" << endl;
+	// menampilkan nominal tagihan
 	cout << "Total\t: " << total << endl;
 
-	// View discount description
+	// menampilkan deskripsi diskon jika menggunakan diskon
 	if (discount) {
 		cout << "Total sudah dengan diskon sebesar 10%" << endl;
 	}
@@ -688,12 +606,14 @@ void nota(string data, bool discount) {
 }
 
 
+
+// function untuk mendapatkan data makanan atau minuman beserta pilihan yang di inputkan
 string get_item(int choice, string type_menu) {
 	ifstream menu;
 	string buffer;
 	int i = 0;
 
-	// read db menu
+	// membaca database foods jika ingin mendapatkan data makanan, dan drinks jika ingin mendapatkan data minuman
 	if (type_menu == "foods") {
 		menu.open("db/foods.txt");
 	} else if (type_menu == "drinks") {
@@ -710,21 +630,27 @@ string get_item(int choice, string type_menu) {
 	return buffer;
 }
 
+// fugnsi yang akan di panggil jika login sebagai karyawan
 void karyawan() {
+	// deklarasi variable
 	string choice, buffer, take_it_home, voucher_code;
 	int total, total_menu, choice_int;
 	int i = 1;
+	// deklarasi jumlah meja dan tipe meja
 	int count_table = 5;
 	string orders = "";
 	string table = "ABC";
 
-	// select menu foods
+	// menampilkan list menu makann berserta menyimpan jumlah menu
 	total_menu = view_menu("foods");
 
+	// melakukan while dengan kondisi true agar bisa memesan lagi
 	while (true) {
+		// meminta untuk menginputkan nomor pesanan
 		cout << "Pilih : ";
 		getline(cin, choice);
 		choice_int = string_to_int(choice);
+		// statmen yang berjajan jika inputan valid
 		if ((choice_int <= total_menu) and (choice_int > 0)) {
 			buffer = get_item(choice_int, "foods");
 			orders+=buffer+" ";
@@ -736,12 +662,14 @@ void karyawan() {
 			}
 			break;
 		} else if (choice_int == 0) {
+			// break while loop jika yang di pilih 0
 			break;
 		}
+		// tampilkan peringatan jika inputan tidak valid
 		cout << "Mohon pilih makanan berdasarkan angka yang tersedia" << endl;
 	}
 
-	// select menu drinks
+	// logika kode di bawah ini sama seperti menu makanan yg di atas
 	total_menu = view_menu("drinks");
 
 	while (true) {
@@ -764,18 +692,24 @@ void karyawan() {
 		cout << "Mohon pilih makanan berdasarkan angka yang tersedia" << endl;
 	}
 
+
+	// meminta user untuk menginputkan y jika ingin di bawa pulang
+	// input selain y jika makan di sini
 	cout << "Bawa pulang? (y/n) : ";
 	getline(cin, take_it_home);
 	if ((take_it_home == "y") | take_it_home == "Y") {
-		// statmen if customer will take it home
+		// meminta user memasukkan kode voucher jika ingin makan di rumah
 		cout << "Masukkan kode voucher untuk mendapatkan diskon 10%\n(langsung enter jika tidak ada voucher) : ";
 		getline(cin, voucher_code);
 		if (voucher_code == "MAKANDIRUMAH") {
+			// tampilkan nota dengan diskon
 			nota(orders, true);
 		} else {
+			// menampilkan nota tanpa diskon karena voucher salah
 			nota(orders, false);
 		}
 	} else {
+		// jika ingin makan di sini minta untuk pilih meja
 		clr_screen();
 		cout << banner << endl;
 		cout << "Pilih meja :" << endl;
@@ -791,7 +725,7 @@ void karyawan() {
 			cout << "Pilih :";
 			getline(cin , choice);
 
-			// checking invalid input
+			// kode untuk mengecek jika meja yang di pilih tidak tersedia
 			buffer = "invalid";
 			for (int i = 1; i <= count_table; ++i) {
 				for (int j = 0; j < table.length(); ++j) {
@@ -808,25 +742,27 @@ void karyawan() {
 
 			break;
 		}
+		// menampilkan nota tanpa diskon
 		nota(orders, false);
 	}
 }
 
 
 int main() {
-	// declarate variable
+	// deklarasi variabel bertipe data string
 	string username, password, x;
 	while (true) {
 		clr_screen();
 		cout << banner << endl;
 
-		// Login input
+		// meminta user untuk memasukkan username dan passwordnya
 		cout << "Login" << endl;
 		cout << "Username : ";
 		getline(cin, username);
 		cout << "Password : ";
 		getline(cin, password);
 
+		// replace spasi dengan _-_
 		if (str_in_str(username, " ")) {
 			username.replace(username.find(" "), 1, "_-_");
 		}
@@ -834,15 +770,16 @@ int main() {
 			password.replace(password.find(" "), 1, "_-_");
 		}
 
-		// Check if login as admin
+		// mengecek jika akun yang login admin, jalankan fungsi admin
 		if (login(username, password) == "admin") {
 			admin();
 			break;
 		} else if (login(username, password) == "karyawan") { // Check if login as karyawan
+			// mengecek jika akun yang login karyawan, jalankan fungsi karyawan
 			cout << "Anda login sebagai karyawan" << endl;
 			karyawan();
 			break;
-		} else { // statment for wrong username or password
+		} else { // jalankan kode ini jika password salah atau akun tidak terdaftar
 			cout << "Wrong username or password" << endl;
 			cout << "ingin login ulang? (y/n) : ";
 			getline(cin, x);
