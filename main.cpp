@@ -160,6 +160,18 @@ void add_admin_account() {
 	// deklarasi variable dengan tipe data sting
 	string username, password, add_again, buffer, data;
 
+	clr_screen();
+	cout << banner << endl;
+	// meminta inputan apakah ingin lanjut menambahkan akun
+	// y untuk lanjut, n untuk kembali ke menu admin
+	cout << "Lanjut menambahkan akun? (y/n) : ";
+	getline(cin, buffer);
+	if ((buffer == "y") | (buffer == "Y")) {
+
+	} else {
+		return;
+	}
+
 	// melakukan while loop dengan kondisi selalu true agar bisa menambahkan akun lagi
 	while (true) {
 		// memanggil function clear screen
@@ -237,6 +249,19 @@ void change_paswd(string type_account) {
 	string path, data, username, password, change_again, buffer;
 	ifstream file, karyawan;
 	ofstream savefile, karyawansave;
+
+	clr_screen();
+	cout << banner << endl;
+	// meminta inputan apakah ingin lanjut mengubah password
+	// y untuk lanjut, n untuk kembali ke menu admin
+	cout << "Lanjut mengubah password? (y/n) : ";
+	getline(cin, buffer);
+	if ((buffer == "y") | (buffer == "Y")) {
+
+	} else {
+		return;
+	}
+
 
 	// memanggil fungsi clear screen dan meampilkan banner
 	clr_screen();
@@ -360,6 +385,19 @@ void add_karyawan_account() {
 	ofstream karyawansave, bio_karyawansave;
 	string username, password, add_again, buffer, data, name, address, birth_date_place, salary, data_bio_karyawan;
 	int i;
+
+	clr_screen();
+	cout << banner << endl;
+	// meminta inputan apakah ingin lanjut menambahkan akun
+	// y untuk lanjut, n untuk kembali ke menu admin
+	cout << "Lanjut menambahkan akun? (y/n) : ";
+	getline(cin, buffer);
+	if ((buffer == "y") | (buffer == "Y")) {
+
+	} else {
+		return;
+	}
+
 	// melakukan while loop agar bisa menambahkan akun lagi
 	while (true) {
 		// memanggil fungsi clear screen dan menampilkan banner
@@ -462,6 +500,18 @@ void delete_account(string type_account) {
 	string path, username, data, buffer;
 	ifstream file;
 	ofstream savefile;
+
+	clr_screen();
+	cout << banner << endl;
+	// meminta inputan apakah ingin lanjut menghapus akun
+	// y untuk lanjut, n untuk kembali ke menu admin
+	cout << "Lanjut menghapus akun? (y/n) : ";
+	getline(cin, buffer);
+	if ((buffer == "y") | (buffer == "Y")) {
+
+	} else {
+		return;
+	}
 
 	// memanggil fungsi clear screen dan meampilkan banner
 	clr_screen();
