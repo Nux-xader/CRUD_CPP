@@ -456,6 +456,117 @@ string integer_formater(string num) {
 }
 
 
+void delete_account(string type_account) {
+	int i, num;
+	string result = "";
+	string path, username, data, buffer;
+	ifstream file;
+	ofstream savefile;
+
+	// memanggil fungsi clear screen dan meampilkan banner
+	clr_screen();
+	cout << banner << endl;
+
+
+	// mengecek akun tipe yang ingin di ubah passwordnya
+	// variable path akan bernilai db/admin.txt jika akun admin
+	// dan akan bernilai db/karyawan.txt jika akun karyawan
+	if (type_account == "admin") {
+		path = "db/admin.txt";
+	} else if (type_account == "karyawan") {
+		path = "db/karyawan.txt";
+	}
+
+	// kode untuk menampilkan list username yang telah terdaftar
+	i = 0;
+	cout << "Daftar username "<< type_account <<" :" << endl;
+	file.open(path);
+	while(!file.eof()) {
+		i++;
+		file >> data;
+		if ((i%2) != 0) {
+			// replacing space with unique string
+			if (str_in_str(data, "_-_")) {
+				data.replace(data.find("_-_"), 3, " ");
+			}
+			cout << data << endl;
+		}
+	}
+	file.close();
+
+	// membuat while loop dengan kondisi true agar pengguna dapat memasukkan userame ulang jika yang di inputkan salah
+	cout << "\n";
+	while (true) {
+		cout << "Masukkan username : ";
+		getline(cin, username);
+		// replace spasi dengan _-_
+		if (str_in_str(username, " ")) {
+			username.replace(username.find(" "), 1, "_-_");
+		}
+		// mengecek apakah username akun terdaftar
+		if (check_already_account(username, type_account)) {
+			// membaca database akun dan skip data ketika userame nya di temukan (menghapus akun)
+			num = 1;
+			file.open(path);
+			while(!file.eof()) {
+				num++;
+				file >> data;
+				if (username == data) {
+					file >> data;
+				} else {
+					result+=data+" ";
+					file >> data;
+					result+=data;
+					if (num < (i/2)) {
+						result+="\n";
+					}
+				}
+			}
+			file.close();
+
+			// menyimpan data
+			savefile.open(path);
+			savefile << result;
+			savefile.close();
+
+			// memnampilkan bahwa password berhasil di update
+			cout << "Akun berhasil di hapus" << endl;
+			cout << "Apakah ingin menghapus lagi? (y) : ";
+			// meminta user menginputkan y jika ingin mengubah password akun lagi
+			// input selain y jika ingin kembali ke menu utama
+			getline(cin, buffer);
+			if ((buffer == "y") | (buffer == "Y")) {
+				// panggil fungsi clear screen dan tampilkan bannner
+				clr_screen();
+				cout << banner << endl;
+				i = 0;
+				// menampilkan list username yang terdaftar
+				// kode ini logika nya sama seperi kode di awal fungsi ini
+				cout << "Daftar username "<< type_account <<" :" << endl;
+				file.open(path);
+				while(!file.eof()) {
+					i++;
+					file >> data;
+					if ((i%2) != 0) {
+						// replace spasi dengan _-_
+						if (str_in_str(data, "_-_")) {
+							data.replace(data.find("_-_"), 3, " ");
+						}
+						cout << data << endl;
+					}
+				}
+				file.close();
+			} else {
+				break;
+			}
+
+		} else {
+			cout << "Mohom memasukkan username yang telah ada" << endl;
+		}
+	}
+}
+
+
 // fungsi untuk menampilkan menu admin
 void admin_menu() {
 	clr_screen();
@@ -465,6 +576,8 @@ void admin_menu() {
 	cout << "2. Ubah password admin" << endl;
 	cout << "3. Tambah akun karyawan" << endl;
 	cout << "4. Ubah password karyawan" << endl;
+	cout << "5. Hapus akun admin" << endl;
+	cout << "6. Hapus akun karyawan" << endl;
 	cout << "0. Keluar\n" << endl;
 }
 
@@ -488,9 +601,13 @@ void admin() {
 			add_karyawan_account();
 		} else if (choice == "4") {
 			change_paswd("karyawan");
+		} else if (choice == "5") {
+			delete_account("admin");
+		} else if (choice == "6") {
+			delete_account("karyawan");
 		} else {
-			cout << "menu berikutnya masih tahap pengembangan" << endl;
-			break;
+			cout << "Mohon memilih sesuai menu" << endl;
+			continue;
 		}
 		admin_menu();
 	}
