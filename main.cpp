@@ -940,7 +940,6 @@ int main() {
 		// mengecek jika akun yang login admin, jalankan fungsi admin
 		if (login(username, password) == "admin") {
 			admin();
-			break;
 		} else if (login(username, password) == "karyawan") { // Check if login as karyawan
 			// mengecek jika akun yang login karyawan, jalankan fungsi karyawan
 			cout << "Anda login sebagai karyawan" << endl;
