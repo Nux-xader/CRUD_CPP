@@ -1,7 +1,7 @@
 Ice_-_Blend 30000
 Milk_-_Shake 30000
 Milk_-_tea 25000
-Fruit_tea 25000
+Fruit_-_tea 25000
 Smoothie 35000
 Latte 25000
 Macchiato 30000

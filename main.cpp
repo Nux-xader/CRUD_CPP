@@ -773,6 +773,32 @@ void nota(string data, bool discount) {
 }
 
 
+// funvtion untuk menampilkan list order
+void view_list_orders(string data) {
+	int i = 1;
+	int num = 1;
+	string buffer;
+	stringstream ss_data(data);
+
+	// menampilkan list order
+	while(getline(ss_data, buffer, ' ')) {
+		if ((i%2) != 0) {
+			// replace _-_ ke spasi
+			while (true) {
+				if (str_in_str(buffer, "_-_")) {
+					buffer.replace(buffer.find("_-_"), 3, " ");
+				} else {
+					break;
+				}
+			}
+			cout << num << ". " << buffer << endl;
+			num++;
+		}
+		i++;
+	}
+
+}
+
 
 // function untuk mendapatkan data makanan atau minuman beserta pilihan yang di inputkan
 string get_item(int choice, string type_menu) {
@@ -810,11 +836,13 @@ void karyawan() {
 
 	// menampilkan list menu makann berserta menyimpan jumlah menu
 	total_menu = view_menu("foods");
+	cout << "\n-----------------------------\nMenu yang telah anda pilih :" << endl;
+	view_list_orders(orders);
 
 	// melakukan while dengan kondisi true agar bisa memesan lagi
 	while (true) {
 		// meminta untuk menginputkan nomor pesanan
-		cout << "Pilih : ";
+		cout << "\nPilih : ";
 		getline(cin, choice);
 		choice_int = string_to_int(choice);
 		// statmen yang berjajan jika inputan valid
@@ -825,6 +853,8 @@ void karyawan() {
 			getline(cin, buffer);
 			if ((buffer == "y") | buffer == "Y") {
 				total_menu = view_menu("foods");
+				cout << "\n-----------------------------\nMenu yang telah anda pilih :" << endl;
+				view_list_orders(orders);
 				continue;
 			}
 			break;
@@ -838,9 +868,11 @@ void karyawan() {
 
 	// logika kode di bawah ini sama seperti menu makanan yg di atas
 	total_menu = view_menu("drinks");
+	cout << "\n-----------------------------\nMenu yang telah anda pilih :" << endl;
+	view_list_orders(orders);
 
 	while (true) {
-		cout << "Pilih : ";
+		cout << "\nPilih : ";
 		getline(cin, choice);
 		choice_int = string_to_int(choice);
 		if ((choice_int <= total_menu) and (choice_int > 0)) {
@@ -850,6 +882,8 @@ void karyawan() {
 			getline(cin, buffer);
 			if ((buffer == "y") | buffer == "Y") {
 				total_menu = view_menu("drinks");
+				cout << "\n-----------------------------\nMenu yang telah anda pilih :" << endl;
+				view_list_orders(orders);
 				continue;
 			}
 			break;
