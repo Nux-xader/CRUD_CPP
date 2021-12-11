@@ -727,6 +727,7 @@ void nota(string data, bool discount) {
 	int total = 0;
 	int i = 0;
 	int num = 1;
+	int money;
 	stringstream ss_data(data);
 
 	// panggil fungsi clear_screen dan tampilkan banner
@@ -761,11 +762,24 @@ void nota(string data, bool discount) {
 
 	cout << "--------------------------------" << endl;
 	// menampilkan nominal tagihan
-	cout << "Total\t: " << total << endl;
+	cout << "Total\t: Rp. " << integer_formater(int_to_string(total)) << endl;
 
 	// menampilkan deskripsi diskon jika menggunakan diskon
 	if (discount) {
 		cout << "Total sudah dengan diskon sebesar 10%" << endl;
+	}
+
+	// melakukan looping sampai uang yang di inputkan mencukupi total dari nota
+	while (true) {
+		cout << "\nMasukkan jumlah pembayaran yang di berikan : ";
+		getline(cin, buffer);
+		money = string_to_int(buffer);
+		num = money-total;
+		if (num > 0) {
+			cout << "Kembalian customer sebesar : Rp." << integer_formater(int_to_string(num)) << endl;
+			break;
+		}
+		cout << "Pembayaran kurang dari total harga!" <<endl;
 	}
 
 	cout << "\n[Press Enter to Continue]";
